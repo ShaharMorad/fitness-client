@@ -35,13 +35,11 @@ fun LoginRegister(viewModel: LoginRegisterViewModel) {
         verticalArrangement = Arrangement.Center
     ) {
         when {
-            userState.isLoading -> {
+            userState.isLoading ->
                 CircularProgressIndicator()
-            }
 
-            userState.error != null -> {
+            userState.error != null ->
                 Text(text = "ERROR: ${userState.error}", color = Color.Red)
-            }
 
             userState.response != null -> {
                 println(userState.response)
@@ -65,7 +63,7 @@ fun LoginRegister(viewModel: LoginRegisterViewModel) {
                         { string ->
                             viewModel.onLnameChange(string)
                         },
-                        "first name"
+                        "last name"
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
