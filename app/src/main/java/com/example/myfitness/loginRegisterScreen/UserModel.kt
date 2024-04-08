@@ -1,4 +1,4 @@
-package com.example.myfitness.loginRegister
+package com.example.myfitness.loginRegisterScreen
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

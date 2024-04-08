@@ -1,4 +1,4 @@
-package com.example.myfitness.loginRegister
+package com.example.myfitness.loginRegisterScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoginRegister(viewModel: LoginRegisterViewModel) {
     val userState by viewModel.userResponseState
-    val isRegisterMode = viewModel.isRegisterMode.value
+    val isRegisterMode by viewModel.isRegisterMode
 
     Column(
         modifier = Modifier
@@ -35,35 +35,26 @@ fun LoginRegister(viewModel: LoginRegisterViewModel) {
         verticalArrangement = Arrangement.Center
     ) {
         when {
-            userState.isLoading -> {
+            userState.isLoading ->
                 CircularProgressIndicator()
-            }
 
-            userState.error != null -> {
-                Text(text = "ERROR: ${userState.error}", color = Color.Red)
-            }
-
-            userState.response != null -> {
-                println(userState.response)
-                Text(text = "GOOD: ${userState.response}", color = Color.Green)
-
-                // what to do when i have response?
-            }
+            userState.error != null ->
+                Text(text = "LoginRegister ERROR: ${userState.error}", color = Color.Red)
 
             else -> {
                 if (isRegisterMode) {
                     CustomTextField(
-                        viewModel.fname.value,
+                        viewModel.firstName.value,
                         { string ->
-                            viewModel.onFnameChange(string)
+                            viewModel.onFirstNameChange(string)
                         },
                         "first name"
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     CustomTextField(
-                        viewModel.lname.value,
+                        viewModel.lastName.value,
                         { string ->
-                            viewModel.onLnameChange(string)
+                            viewModel.onLastNameChange(string)
                         },
                         "first name"
                     )
@@ -100,7 +91,20 @@ fun LoginRegister(viewModel: LoginRegisterViewModel) {
                     onClick = { viewModel.onToggleMode() }
                 )
                 Row {
-                    Button(onClick = { if (isRegisterMode) viewModel.registerUser() else viewModel.loginUser() }) {
+                    Button(onClick = {
+                        if (isRegisterMode)
+                            viewModel.registerUser(
+                                viewModel.firstName.value,
+                                viewModel.lastName.value,
+                                viewModel.email.value,
+                                viewModel.password.value
+                            )
+                        else
+                            viewModel.loginUser(
+                                viewModel.email.value,
+                                viewModel.password.value
+                            )
+                    }) {
                         Text(if (isRegisterMode) "register" else "login")
                     }
                 }

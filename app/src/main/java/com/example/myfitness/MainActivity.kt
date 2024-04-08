@@ -6,17 +6,20 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myfitness.loginRegister.LoginRegister
-import com.example.myfitness.loginRegister.LoginRegisterViewModel
+import com.example.myfitness.app.AppView
+import com.example.myfitness.loginRegisterScreen.LoginRegister
+import com.example.myfitness.loginRegisterScreen.LoginRegisterViewModel
 import com.example.myfitness.ui.theme.MyFitnessTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel: LoginRegisterViewModel = viewModel()
+            val loginRegisterViewModel: LoginRegisterViewModel = viewModel()
+            val userState by loginRegisterViewModel.userResponseState
 
             MyFitnessTheme {
                 // A surface container using the 'background' color from the theme
@@ -24,7 +27,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginRegister(viewModel)
+                    if (userState.response == null)
+                        LoginRegister(loginRegisterViewModel)
+                    else
+                        AppView(userState.response!!) {
+                            loginRegisterViewModel.disconnect()
+                        }
                 }
             }
         }

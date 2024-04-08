@@ -1,5 +1,6 @@
-package com.example.myfitness.loginRegister
+package com.example.myfitness.loginRegisterScreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
