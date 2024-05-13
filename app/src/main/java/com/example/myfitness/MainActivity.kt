@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val loginRegisterViewModel: LoginRegisterViewModel = viewModel()
             val userState by loginRegisterViewModel.userResponseState
+            val user = userState.response
 
             MyFitnessTheme {
                 // A surface container using the 'background' color from the theme
@@ -27,10 +28,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (userState.response == null)
+                    if (user == null)
                         LoginRegister(loginRegisterViewModel)
                     else
-                        AppView(userState.response!!) {
+                        AppView(user) {
                             loginRegisterViewModel.disconnect()
                         }
                 }

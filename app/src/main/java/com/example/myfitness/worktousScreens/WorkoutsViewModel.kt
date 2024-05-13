@@ -10,54 +10,47 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class WorkoutsViewModel(val user: UserModel) : ViewModel() {
-  init {
-    fetchAllWorkouts(user._id)
-  }
 
-  private val _allWorkoutsResponseState = mutableStateOf(WorkoutsResponseState())
-  val allWorkoutsResponseState: State<WorkoutsResponseState> = _allWorkoutsResponseState
+    private val _allWorkoutsResponseState= mutableStateOf(WorkoutsResponseState())
+    val allWorkoutsResponseState = _allWorkoutsResponseState
 
-  private val _selectedWorkout = mutableStateOf<WorkoutModel?>(null)
-  val selectedWorkout: State<WorkoutModel?> = _selectedWorkout
+    private val _selectedWorkout = mutableStateOf<WorkoutModel?>(null)
+    val selectedWorkout: State<WorkoutModel?> = _selectedWorkout
 
-  fun setSelectedWorkout(workout: WorkoutModel?) {
-    _selectedWorkout.value = workout
-  }
-
-  private fun fetchAllWorkouts(userId: UUID) {
-    try {
-      _allWorkoutsResponseState.value =
-        WorkoutsResponseState(isLoading = true, response = listOf(), error = null)
-      print("here")
-
-    } catch (e: Error) {
-      print("there")
-
+    init {
+        fetchAllWorkouts(user._id)
+    }
+    fun setSelectedWorkout(workout: WorkoutModel?) {
+        _selectedWorkout.value = workout
     }
 
-    viewModelScope.launch {
-      try {
-        val response = serverService.fetchUserWorkouts(userId)
-        _allWorkoutsResponseState.value = _allWorkoutsResponseState.value.copy(
-          response = response,
-          isLoading = false,
-        )
-      } catch (e: Exception) {
-        _allWorkoutsResponseState.value = _allWorkoutsResponseState.value.copy(
-          isLoading = false,
-          error = "Oops something went wrong while trying to fetch your workouts... \n${e.message}"
-        )
-      }
+    private fun fetchAllWorkouts(userId: UUID) {
+        _allWorkoutsResponseState.value =
+            WorkoutsResponseState(isLoading = true, response = listOf(), error = null)
+
+        viewModelScope.launch {
+            try {
+                val response = serverService.fetchUserWorkouts(userId)
+                _allWorkoutsResponseState.value = _allWorkoutsResponseState.value.copy(
+                    response = response,
+                    isLoading = false,
+                )
+            } catch (e: Exception) {
+                _allWorkoutsResponseState.value = _allWorkoutsResponseState.value.copy(
+                    isLoading = false,
+                    error = "Oops something went wrong while trying to fetch your workouts... \n${e.message}"
+                )
+            }
+        }
     }
-  }
 
-  fun refetchAllWorkouts() {
-    fetchAllWorkouts(user._id)
-  }
+    fun refetchAllWorkouts() {
+        fetchAllWorkouts(user._id)
+    }
 
-  data class WorkoutsResponseState(
-    val isLoading: Boolean = false,
-    val response: List<WorkoutModel> = listOf(),
-    val error: String? = null
-  )
+    data class WorkoutsResponseState(
+        val isLoading: Boolean = false,
+        val response: List<WorkoutModel> = listOf(),
+        val error: String? = null
+    )
 }

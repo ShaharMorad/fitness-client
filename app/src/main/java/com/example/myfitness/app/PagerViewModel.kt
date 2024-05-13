@@ -9,7 +9,7 @@ class PagerViewModel() : ViewModel() {
     private val _currentPage = mutableStateOf(Page.WORKOUTS)
     val currentPage: MutableState<Page> = _currentPage
 
-    fun onChangePage(page: Page){
-        currentPage.value=page
+    fun onChangePage(page: Page) {
+        _currentPage.value = page
     }
 }

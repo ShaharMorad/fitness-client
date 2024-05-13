@@ -24,75 +24,76 @@ import com.example.myfitness.worktousScreens.workoutsListScreen.WorkoutsListView
 
 @Composable
 fun AppView(
-  user: UserModel,
-  handleDisconnect: () -> Unit
+    user: UserModel,
+    handleDisconnect: () -> Unit
 ) {
-  val pagerViewModel: PagerViewModel = viewModel()
-  val workoutViewModel = WorkoutsViewModel(user)
-  val workoutsState by workoutViewModel.allWorkoutsResponseState
+    val pagerViewModel: PagerViewModel = viewModel()
+    val workoutViewModel = WorkoutsViewModel(user)
+    val workoutsState by workoutViewModel.allWorkoutsResponseState
 
-  Scaffold(
-    topBar = {
-      AppBar(
-        handleChangePage = { page ->
-          pagerViewModel.onChangePage(page)
+    Scaffold(
+        topBar = {
+            AppBar(
+                handleChangePage = { page ->
+                    pagerViewModel.onChangePage(page)
+                },
+                handleDisconnect
+            )
         },
-        handleDisconnect
-      )
-    },
-  ) { innerPadding ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(innerPadding)
-        .background(color = Color.White),
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      when {
-        workoutsState.isLoading ->
-          CircularProgressIndicator()
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(color = Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            when {
+                workoutsState.isLoading ->
+                    CircularProgressIndicator()
 
-        workoutsState.error != null ->
-          Text(text = "AppView ERROR: ${workoutsState.error}", color = Color.Red)
+                workoutsState.error != null ->
+                    Text(text = "AppView ERROR: ${workoutsState.error}", color = Color.Red)
 
-        else -> {
-          Pages(
-            pagerViewModel,
-            workoutViewModel
-          ) { workoutViewModel.refetchAllWorkouts() }
+                else -> {
+                    Pages(
+                        pagerViewModel,
+                        workoutViewModel
+                    )
+                }
+            }
         }
-      }
     }
-  }
 }
 
 @Composable
 fun Pages(
-  pagerViewModel: PagerViewModel,
-  workoutsViewModel: WorkoutsViewModel,
-  refetchWorkouts: () -> Unit
+    pagerViewModel: PagerViewModel,
+    workoutsViewModel: WorkoutsViewModel,
 ) {
-  val workoutsState by workoutsViewModel.allWorkoutsResponseState
-  val selectedWorkout by workoutsViewModel.selectedWorkout
-  val editWorkoutViewModel = EditWorkoutViewModel(selectedWorkout, workoutsViewModel.user._id)
+    val workoutsState by workoutsViewModel.allWorkoutsResponseState
+    val selectedWorkout by workoutsViewModel.selectedWorkout
+    val editWorkoutViewModel = EditWorkoutViewModel(selectedWorkout, workoutsViewModel.user._id)
 
-  fun onWorkoutClick(workout: WorkoutModel) {
-    workoutsViewModel.setSelectedWorkout(workout)
-    editWorkoutViewModel.setWorkout(workout)
-    pagerViewModel.onChangePage(Page.EDIT_WORKOUT)
-  }
-
-  when (pagerViewModel.currentPage.value) {
-    Page.WORKOUTS -> {
-      refetchWorkouts()
-      WorkoutsListView(workoutsState.response) { onWorkoutClick(it) }
+    fun onWorkoutClick(workout: WorkoutModel) {
+        workoutsViewModel.setSelectedWorkout(workout)
+        editWorkoutViewModel.setWorkout(workout)
+        pagerViewModel.onChangePage(Page.EDIT_WORKOUT)
     }
 
-    Page.COLANDER ->
-      CalendarView(workoutsState.response) { onWorkoutClick(it) }
+    when (pagerViewModel.currentPage.value) {
+        Page.WORKOUTS -> {
+            WorkoutsListView(workoutsState.response) { onWorkoutClick(it) }
+        }
 
-    Page.EDIT_WORKOUT ->
-      EditWorkoutView(editWorkoutViewModel)
-  }
+        Page.COLANDER ->
+            CalendarView(workoutsState.response) { onWorkoutClick(it) }
+
+        Page.EDIT_WORKOUT ->
+            EditWorkoutView(editWorkoutViewModel) {
+                workoutsViewModel.refetchAllWorkouts()
+                pagerViewModel.onChangePage(Page.WORKOUTS)
+            }
+    }
 }
 

@@ -20,20 +20,20 @@ fun WorkoutsListView(
     else
         LazyColumn {
             items(workouts) {
-                WorkoutCardView(it,onClickWorkout)
+                WorkoutCardView(it, onClickWorkout)
             }
         }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CalendarViewPreview() {
+fun WorkoutsListPreview() {
     val userId = UUID.randomUUID()
 
     WorkoutsListView(
         listOf(
             WorkoutModel(_id = UUID.randomUUID(), date = Date(), type = "gym", userId = userId),
             WorkoutModel(_id = UUID.randomUUID(), date = Date(), type = "running", userId = userId),
-        ),{}
+        ), {}
     )
 }

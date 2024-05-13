@@ -18,40 +18,46 @@ import java.util.Date
 
 @Composable
 fun EditWorkoutView(
-  editWorkoutViewModel: EditWorkoutViewModel,
+    editWorkoutViewModel: EditWorkoutViewModel,
+    afterSave: () -> Unit
 ) {
-  val workoutState by editWorkoutViewModel.workoutState
+    val workoutType by editWorkoutViewModel.type
+    val workoutTime by editWorkoutViewModel.time
+    val initialWorkout by editWorkoutViewModel.workoutState
 
-  fun onSave(type: String, date: Date) {
-    editWorkoutViewModel.upsertUserWorkout(workoutState.copy(type = type, date = date))
-  }
-
-  Column(
-    modifier = Modifier
-      .fillMaxSize(),
-    verticalArrangement = Arrangement.SpaceBetween
-  ) {
-    CustomTextField(
-      value = workoutState.type,
-      onChange = { workoutState.type = it },
-      placeholder = "workout type"
-    )
-    Text(text = workoutState.type, color = Color.Blue)
-
-    TimePickerWithDialog(workoutState.date) { hours, minutes ->
-      workoutState.date.hours = hours
-      workoutState.date.minutes = minutes
+    fun onSave(type: String, date: Date) {
+        editWorkoutViewModel.upsertUserWorkout(
+            initialWorkout.copy(type = type, date = date)
+        ) {
+            afterSave()
+        }
     }
 
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      horizontalArrangement = Arrangement.SpaceEvenly
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-      Button(onClick = { onSave(workoutState.type, workoutState.date) }) {
-        Text(text = "save")
-      }
+        CustomTextField(
+            value = workoutType,
+            onChange = { editWorkoutViewModel.onTypeChange(it) },
+            placeholder = "workout type"
+        )
+        Text(text = workoutType, color = Color.Blue)
+
+        TimePickerWithDialog(workoutTime) { hours, minutes ->
+            editWorkoutViewModel.onTimeChange(hours, minutes)
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { onSave(workoutType, workoutTime) }) {
+                Text(text = "save")
+            }
+        }
     }
-  }
 }
